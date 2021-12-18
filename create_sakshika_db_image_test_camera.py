@@ -6,7 +6,7 @@ count = 0
 while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
-    cv2.imwrite("images/sakshika-phadakey/img%d.jpg"% count, frame)
+    cv2.imwrite("images/sakshika/img%d.jpg"% count, frame)
     # Our operations on the frame come here
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
