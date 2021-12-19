@@ -54,15 +54,13 @@ def implement():
 				if warped is not None:
 					frame = warped
 
-			cv2.rectangle(frame, (x - 20, y - 20), (x + w + 20, y + h + 20), (0, 255, 0), 4)
 			cv2.rectangle(frame, (x - 22, y - 90), (x + w + 22, y - 22), (0, 255, 0), -1)
-
 			cv2.putText(frame, name, (x, y - 40), font, 1, (255, 255, 255), 3)
 			detected_face.append(name.replace(' ', '').replace('-', '').lower())
-			cv2.waitKey(2)
+			#cv2.waitKey(2)
 		cv2.putText(frame, 'Number of faces: ' + str(len(faces)), (40, 40), font, 1, (255, 0, 0), 2)
 		cv2.imshow('frame', frame)
-		cv2.waitKey(5)
+		cv2.waitKey(4)
 
 		if num > 1:
 			text1 = "Multiple Faces Detected, Please Speak the youtuber name you want to scan"
