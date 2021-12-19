@@ -63,7 +63,7 @@ def implement():
 		cv2.waitKey(4)
 
 		if num > 1:
-			text1 = "Multiple Faces Detected, Please Speak the youtuber name you want to scan"
+			text1 = "Multiple Faces Detected, Please tell us the youtuber name you want to scan"
 			speaker.say(text1)
 			speaker.runAndWait()
 			with sr.Microphone() as source:
