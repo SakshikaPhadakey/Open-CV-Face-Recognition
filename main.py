@@ -20,58 +20,55 @@ def frame(labels):
     web_cam = cv2.VideoCapture(0)
     
     while True:
-        single_user(web_cam,labels)
+        num = 0
+        user_count = single_user(web_cam,labels,num)
+        
+        if user_count > 1:
+            multiple_users()
 
-        # if num > 1:
-        #     text1 = "Multiple faces detected, Your Favourite youtubers please !"
-        #     speaker.say(text1)
-        #     speaker.runAndWait()
-        #     with sr.Microphone() as source:
-        #         audio = r.listen(source)
-        #         try:
-        #             get = r.recognize_google(audio)
-        #             speaker.say(get)
-        #             print(get)
-        #             speaker.runAndWait()
-        #             break
-        #         except sr.UnknownValueError:
-        #             print('error')
-        #         except sr.RequestError as e:
-        #             print('failed'.format(e))
-
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(100) == ord('q'):
             break
 
-def single_user(web_cam_video,labels):
+def single_user(web_cam_video,labels,num):
     ret, frame = web_cam_video.read()
     faces = facial_detection(frame)
-    num = 0
-        
+    name = ''
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    
     for (x, y, w, h) in faces:
         gray_roi = roi_gray(frame,x,y,w,h)
         id_, conf = predict(gray_roi)
         name = labels[id_]
-        
-        if(name):
-            video = cv2.VideoCapture("./video/" + name + ".mp4")
-            ret, source = video.read()
-            num = int(num) + 1
-            
-            if source is not None:
-                warped = find_and_warp(
-                    frame, 
-                    source,
-                    cornerIds=(1, 2, 4, 3)
-                )
+        cv2.putText(frame,name, (x,y+h),font, 1, (255, 255, 255), 3)
 
-                if warped is not None:
-                    run_speech("Playing" + name + "Video")
-                    frame = warped
-                    break
+    if(name):
+        video = cv2.VideoCapture("./video/" + name + ".mp4")
+        ret, source = video.read()
+        num = int(num) + 1
+            
+        if source is not None:
+            warped = find_and_warp(
+                frame, 
+                source,
+                cornerIds=(1, 2, 4, 3)
+            )
+
+            if warped is not None:
+                frame = warped
     cv2.imshow('Augmented Reality', frame)
     cv2.waitKey(4)
-    return 
+    return num
 
+def multiple_users():
+    run_speech("Multiple faces detected, Your Favourite youtubers please !")
+    with sr.Microphone() as source:
+        audio = r.listen(source)
+        get = r.recognize_google(audio)
+        speaker.say(get)
+        print(get)
+        speaker.runAndWait()
+    return 
+            
 def find_and_warp(frame, source, cornerIds):
     (imgH, imgW) = frame.shape[:2]
     (srcH, srcW) = source.shape[:2]
@@ -82,7 +79,6 @@ def find_and_warp(frame, source, cornerIds):
         markerIds.flatten()
     refPts = []
     for i in cornerIds:
-        print("cornerIds is",cornerIds)
         j = np.squeeze(np.where(markerIds == i))
         if j.size == 0:
             continue
@@ -90,11 +86,9 @@ def find_and_warp(frame, source, cornerIds):
             j = j[0]   
 
         markerCorners = np.array(markerCorners)
-        #print(markerCorners)
         corner = np.squeeze(markerCorners[j])
         refPts.append(corner)
     
-    print("refPts",refPts)
     if len(refPts) != 4:
             return None
     (refPtTL, refPtTR, refPtBR, refPtBL) = np.array(refPts)

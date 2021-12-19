@@ -1,14 +1,7 @@
 import cv2
 import numpy as np
-import pickle
 
 dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_250)
-
-labels = {"person_name": 1}
-
-with open("pickles/face-labels.pickle", 'rb') as f:
-	og_labels = pickle.load(f)
-	labels = {v:k for k,v in og_labels.items()}
 # Load the predefined dictionary
 
 def createAruco():
@@ -32,33 +25,32 @@ def detectingArucoMarkers():
 
 
 def frame(params):
-    videostream = cv2.VideoCapture(0)
+    videostream = cv2.VideoCapture(0)   
+    video = cv2.VideoCapture("./video/bharti-singh.mp4")
     
     while True:
+
         ret, frame = videostream.read()
-        faces = facial_detection(frame)
-        
-        for (x, y, w, h) in faces:
-            gray_roi = roi_gray(frame,x,y,w,h)
-            id_, conf = predict(gray_roi)
-            name = labels[id_]
-            
-            if(name):
-                print("name is",name)
-                video = cv2.VideoCapture("./video/" + name + ".mp4")
-                ret, source = video.read()
-
-                if source is not None:
-                    warped = find_and_warp(
-                        frame, source,
-                        cornerIds=(1, 2, 4, 3),
-                        dictionary=dictionary,
-                        parameters=params,
-                    )
-
-                    if warped is not None:
-                        frame = warped
-                        break
+        ret, source = video.read()
+        # frame_rgb = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        # scale_percent = (1000/frame.shape[0])*100
+        # width = int(frame.shape[1] * scale_percent / 100)
+        # height = int(frame.shape[0] * scale_percent / 100)
+        # dim = (width, height)
+        # frame = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
+        # width2 = int(source.shape[1] * scale_percent / 100)
+        # height2 = int(source.shape[0] * scale_percent / 100)
+        # dim = (width2, height2)
+        # source = cv2.resize(source, dim, interpolation = cv2.INTER_AREA)
+    
+        warped = find_and_warp(
+            frame, source,
+            cornerIds=(1, 2, 4, 3),
+            dictionary=dictionary,
+            parameters=params,
+        )
+        if warped is not None:
+            frame = warped
 
         cv2.imshow('Augmented Reality', frame)
         if cv2.waitKey(1) == ord('q'):
@@ -108,23 +100,5 @@ def find_and_warp(frame, source, cornerIds, dictionary, parameters):
     output = cv2.add(warpedMultiplied, imageMultiplied)
     output = output.astype("uint8")
     return output
-
-def facial_detection(frame):
-	face_cascade = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_alt2.xml')
-	faces = face_cascade.detectMultiScale(gray(frame), scaleFactor=1.5, minNeighbors=5)
-	return faces
-
-def gray(frame):
-	return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-def roi_gray(frame,x,y,w,h):
-	gray_frame = gray(frame)
-	return gray_frame[y:y+h, x:x+w]
-
-
-def predict(roi_gray):
-	recognizer = cv2.face.LBPHFaceRecognizer_create()
-	recognizer.read("./recognizers/face-trainner.yml")
-	return recognizer.predict(roi_gray)
 
 detectingArucoMarkers()
