@@ -18,34 +18,32 @@ def init():
 
 def frame(labels):
     web_cam = cv2.VideoCapture(0)
+    videos = capture_all_videos()
     
     while True:
         num = 0
-        user_count = single_user(web_cam,labels,num)
-        
-        if user_count > 1:
-            multiple_users()
+        single_user(web_cam,labels,num,videos)
 
-        if cv2.waitKey(100) == ord('q'):
+        if cv2.waitKey(1) == ord('q'):
             break
 
-def single_user(web_cam_video,labels,num):
+def single_user(web_cam_video,labels,num,videos):
     ret, frame = web_cam_video.read()
     faces = facial_detection(frame)
     name = ''
     font = cv2.FONT_HERSHEY_SIMPLEX
-    
+
     for (x, y, w, h) in faces:
         gray_roi = roi_gray(frame,x,y,w,h)
         id_, conf = predict(gray_roi)
         name = labels[id_]
         cv2.putText(frame,name, (x,y+h),font, 1, (255, 255, 255), 3)
-
+    
     if(name):
-        video = cv2.VideoCapture("./video/" + name + ".mp4")
-        ret, source = video.read()
+        # video = cv2.VideoCapture("./video/" + name + ".mp4")
+        ret, source = videos[name].read()
         num = int(num) + 1
-            
+        
         if source is not None:
             warped = find_and_warp(
                 frame, 
@@ -53,12 +51,21 @@ def single_user(web_cam_video,labels,num):
                 cornerIds=(1, 2, 4, 3)
             )
 
-            if warped is not None:
-                frame = warped
+        if warped is not None:
+            frame = warped
+
     cv2.imshow('Augmented Reality', frame)
     cv2.waitKey(4)
     return num
 
+def capture_all_videos():
+    return {
+        'bharti-singh' : cv2.VideoCapture("./video/bharti-singh.mp4"),
+        'malvika-sitlani' : cv2.VideoCapture("./video/malvika-sitlani.mp4"),
+        'gaurav-taneja' : cv2.VideoCapture("./video/gaurav-taneja.mp4"),
+        'bhuvan-bam': cv2.VideoCapture("./video/bhuvan-bam.mp4")
+    }
+    
 def multiple_users():
     run_speech("Multiple faces detected, Your Favourite youtubers please !")
     with sr.Microphone() as source:
@@ -139,7 +146,6 @@ def load_pickle_data():
     with open("pickles/face-labels.pickle", 'rb') as f:
         og_labels = pickle.load(f)
         labels = {v:k for k,v in og_labels.items()}
-        print(labels)
     
     return labels
 
