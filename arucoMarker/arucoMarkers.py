@@ -58,6 +58,7 @@ def frame(params):
 
                     if warped is not None:
                         frame = warped
+                        break
 
         cv2.imshow('Augmented Reality', frame)
         if cv2.waitKey(1) == ord('q'):
