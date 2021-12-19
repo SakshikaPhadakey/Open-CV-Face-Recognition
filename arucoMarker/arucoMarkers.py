@@ -26,7 +26,7 @@ def detectingArucoMarkers():
 
 def frame(params):
     videostream = cv2.VideoCapture(0)   
-    video = cv2.VideoCapture("./test.mp4")
+    video = cv2.VideoCapture("./video/bharti-singh.mp4")
     
     while True:
 
