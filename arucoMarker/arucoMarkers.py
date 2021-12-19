@@ -1,3 +1,8 @@
+# Augmented Reality University of Cordoba
+#  It is a binary square with black background and boundaries and a white generated pattern within it that uniquely identifies it.
+# New picture has the correct perspective distortion when we move the camera.
+# 25 predefined dictionary of markers
+
 import cv2
 import numpy as np
 

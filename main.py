@@ -1,7 +1,7 @@
 # Modules
-import cv2
-import numpy as np
-import pickle
+import cv2 # opencv - open source library that is used to process an image
+import numpy as np # Python library that adds support for large,multi-dimensional array.
+import pickle # serialize python object into binary format and deserialize it back to python object.
 import pyttsx3
 import speech_recognition as sr
 import arucoFunctionality
@@ -65,7 +65,7 @@ def capture_all_videos():
         'gaurav-taneja' : cv2.VideoCapture("./video/gaurav-taneja.mp4"),
         'bhuvan-bam': cv2.VideoCapture("./video/bhuvan-bam.mp4")
     }
-    
+
 def multiple_users():
     run_speech("Multiple faces detected, Your Favourite youtubers please !")
     with sr.Microphone() as source:
@@ -119,12 +119,14 @@ def find_and_warp(frame, source, cornerIds):
     return output
 
 def facial_detection(frame):
-	face_cascade = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_alt2.xml')
+    # A Haar Cascade is an object detection method used to locate an object of interest in images
+	face_cascade = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_alt2.xml') 
 	faces = face_cascade.detectMultiScale(gray(frame), scaleFactor=1.5, minNeighbors=5)
-	return faces
+	return faces # list of rectangles in the form Rect(x,y,w,h)
 
+# Detecting luminance,opposed to color, will generally yield better results in object
 def gray(frame):
-	return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+	return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # cvtColor - converts to gray scale
 
 def roi_gray(frame,x,y,w,h):
 	gray_frame = gray(frame)
