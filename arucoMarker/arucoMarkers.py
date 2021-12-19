@@ -82,6 +82,7 @@ def find_and_warp(frame, source, cornerIds, dictionary, parameters):
     if len(refPts) != 4:
             return None
     (refPtTL, refPtTR, refPtBR, refPtBL) = np.array(refPts)
+    print("dst mat",refPtTL[0], refPtTR[1], refPtBR[2], refPtBL[3])
     dstMat = [refPtTL[0], refPtTR[1], refPtBR[2], refPtBL[3]]
     dstMat = np.array(dstMat)
     srcMat = np.array([[0, 0], [srcW, 0], [srcW, srcH], [0, srcH]])
